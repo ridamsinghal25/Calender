@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import CalendarPage from "@/pages/calender/presentation/CalenderPage";
+import CalendarPage from "@/pages/calendar/presentation/CalendarPage";
 
 const CalendarPageContainer = () => {
   const [currentEvents, setCurrentEvents] = useState([]);
