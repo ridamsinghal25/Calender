@@ -4,11 +4,11 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-     "start": "nodemon -r dotenv/config --experimental-json-modules src/server.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/server.js"
   },
   "author": "Ridam Singhal",
   "license": "ISC",
-  "description": ""
+  "description": "",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
@@ -21,6 +21,5 @@
   "devDependencies": {
     "nodemon": "^3.1.7",
     "prettier": "^3.3.3"
-  },
-  
+  }
 }
