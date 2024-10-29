@@ -14,10 +14,7 @@ function SigninPageContainer() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/users/login`,
-        data
-      );
+      const response = await axios.post(`/users/login`, data);
 
       sessionStorage.setItem("token", response.data?.data?.accessToken);
 

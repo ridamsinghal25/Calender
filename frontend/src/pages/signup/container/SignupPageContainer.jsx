@@ -14,10 +14,7 @@ function SignupPageContainer() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/users/register`,
-        data
-      );
+      const response = await axios.post(`/users/register`, data);
 
       if (response.data?.success) {
         toast({
