@@ -37,6 +37,44 @@ const createEvent = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, newEvent, "Event created successfully"));
 });
 
+const updateEvent = asyncHandler(async (req, res) => {
+  const { eventId } = req.params;
+  const { title, start, end, description } = req.body;
+
+  if (!isValidObjectId(eventId)) {
+    throw new ApiError(400, "Invalid event");
+  }
+
+  if (
+    [title, start, end, description].some(
+      (field) => field?.trim === "" || !field
+    )
+  ) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  const newEvent = await Event.findByIdAndUpdate(
+    eventId,
+    {
+      title,
+      start,
+      end,
+      description,
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!newEvent) {
+    throw new ApiError(500, "Failed to update event");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, newEvent, "Event updated successfully"));
+});
+
 const getEvents = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
@@ -102,4 +140,4 @@ const deleteEvent = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, deletedEvent, "Event deleted successfully"));
 });
 
-export { createEvent, getEvents, deleteEvent };
+export { createEvent, updateEvent, getEvents, deleteEvent };
