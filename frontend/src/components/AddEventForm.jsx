@@ -4,8 +4,9 @@ import { useForm } from "react-hook-form";
 import FormFieldInput from "./FormFieldInput";
 import { FormFieldDatePicker } from "./FormFieldDatePicker";
 import { Button } from "./ui/button";
+import { Loader2 } from "lucide-react";
 
-function AddEventForm({ onSubmit, startDate }) {
+function AddEventForm({ onSubmit, startDate, isSubmitting }) {
   const addEventForm = useForm({
     defaultValues: {
       title: "",
@@ -34,7 +35,15 @@ function AddEventForm({ onSubmit, startDate }) {
             description={"Optional if not picked default is set to full day"}
             startDate={startDate}
           />
-          <Button type="submit">Add Event</Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait...
+              </>
+            ) : (
+              "Add Event"
+            )}
+          </Button>
         </form>
       </Form>
     </div>
