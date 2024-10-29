@@ -114,7 +114,7 @@ const getEvents = asyncHandler(async (req, res) => {
   ]);
 
   if (events?.length === 0 || !events) {
-    return res.status(200).json(new ApiResponse(200, {}, "No event found"));
+    return res.status(200).json(new ApiResponse(200, [], "No event found"));
   }
 
   res

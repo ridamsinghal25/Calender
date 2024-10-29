@@ -21,7 +21,7 @@ const CalendarPageContainer = () => {
       .get(`/events/get-events`)
       .then((response) => {
         if (response.data) {
-          const sanitizedData = response.data.data.map((event) => ({
+          const sanitizedData = response.data.data?.map((event) => ({
             ...event,
             id: event._id,
           }));
