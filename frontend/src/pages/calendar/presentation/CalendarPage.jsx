@@ -7,6 +7,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -14,18 +15,26 @@ import {
 } from "@/components/ui/dialog";
 import AddEventForm from "@/components/AddEventForm";
 import { Button } from "@/components/ui/button";
+import { Loader2, X } from "lucide-react";
+import UpdateEventForm from "@/components/UpdateEventForm";
 
 const CalendarPage = ({
   currentEvents,
   handleDateClick,
   handleEventClick,
   handleDeleteEvent,
+  handleEventDrop,
   isDialogOpen,
   setIsDialogOpen,
   selectedDate,
   setCurrentEvents,
   deleteEvent,
   handleAddEvent,
+  isSubmitting,
+  updateEventInfo,
+  handleUpdateEvent,
+  setDeleteEvent,
+  setUpdateEventInfo,
 }) => {
   return (
     <div>
@@ -35,31 +44,32 @@ const CalendarPage = ({
             Calendar Events
           </div>
           <ul className="space-y-4">
-            {currentEvents.length <= 0 && (
+            {currentEvents?.length <= 0 ? (
               <div className="italic text-center text-gray-400">
                 No Events Present
               </div>
-            )}
-
-            {currentEvents.length > 0 &&
-              currentEvents.map((event) => (
+            ) : (
+              currentEvents?.map((event, index) => (
                 <li
-                  className="border border-gray-200 shadow px-4 py-2 rounded-md text-blue-800"
-                  key={event.id}
+                  className="border border-gray-200 shadow px-4 py-2 rounded-md font-medium"
+                  key={event?.id || index}
                 >
-                  {event.title}
+                  {event?.title}
                   <br />
-                  {event.extendedProps?.description}
+                  <span className="font-light">
+                    {event?.extendedProps?.description}
+                  </span>
                   <br />
                   <label className="text-slate-950">
-                    {formatDate(event.start, {
+                    {formatDate(event?.start, {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
                     })}{" "}
                   </label>
                 </li>
-              ))}
+              ))
+            )}
           </ul>
         </div>
 
@@ -81,24 +91,45 @@ const CalendarPage = ({
             editable={true}
             selectable={true}
             selectAllow={(selectInfo) => {
-              return selectInfo.start >= new Date();
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return selectInfo.start >= today;
             }}
             selectMirror={true}
             dayMaxEvents={true}
             select={handleDateClick}
             eventClick={handleEventClick}
             eventsSet={(events) => setCurrentEvents(events)}
-            initialEvents={
-              typeof window !== "undefined"
-                ? JSON.parse(localStorage.getItem("events") || "[]")
-                : []
-            }
+            eventAllow={(dropInfo) => dropInfo?.start >= new Date()}
+            eventDrop={handleEventDrop}
+            initialEvents={currentEvents}
           />
         </div>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent
+          className="max-h-[80vh] max-w-xs sm:max-w-md rounded-lg overflow-y-auto"
+          hideClose
+        >
+          <DialogClose className="absolute right-3 top-3" asChild>
+            <Button
+              className="h-7 w-7 p-0"
+              variant="ghost"
+              onClick={() => {
+                setIsDialogOpen(false);
+                setDeleteEvent(false);
+
+                if (updateEventInfo) {
+                  updateEventInfo.revert();
+                  setUpdateEventInfo(null);
+                }
+              }}
+            >
+              <X size={15} />
+            </Button>
+          </DialogClose>
+
           <DialogHeader>
             <DialogTitle>
               {deleteEvent ? "Delete Event" : "Add Event"}
@@ -114,14 +145,30 @@ const CalendarPage = ({
               <Button
                 variant="destructive"
                 onClick={() => handleDeleteEvent(selectedDate)}
+                type="submit"
+                disabled={isSubmitting}
               >
-                Delete Event
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait...
+                  </>
+                ) : (
+                  "Delete Event"
+                )}
               </Button>
             </div>
+          ) : updateEventInfo ? (
+            <UpdateEventForm
+              isSubmitting={isSubmitting}
+              updateEventInfo={updateEventInfo}
+              onSubmit={handleUpdateEvent}
+            />
           ) : (
             <AddEventForm
               onSubmit={handleAddEvent}
               startDate={selectedDate?.start}
+              isSubmitting={isSubmitting}
             />
           )}
         </DialogContent>
